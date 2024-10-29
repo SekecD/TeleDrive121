@@ -26,7 +26,6 @@ const Breadcrumb: React.FC<Props> = ({
     searchParams.set('parent', crumb.id)
 
     if (!crumb?.id) {
-      // history.replace(location.pathname)
       searchParams.delete('parent')
     } else {
       searchParams.set('parent', crumb.id)

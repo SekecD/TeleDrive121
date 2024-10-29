@@ -26,6 +26,7 @@ exports.createTemplate = (name) => {
         { role: "zoomout" },
         { type: "separator" },
         { role: "togglefullscreen" },
+        { role: "disablefullscreen"},
       ],
     },
     {

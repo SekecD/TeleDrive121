@@ -69,7 +69,8 @@ export class Auth {
     await req.tg.connect()
     let signIn: any
     if (password) {
-      const data = await req.tg.invoke(new Api.account.GetPassword())
+      // const data = await req.tg.invoke(new Api.account.GetPassword())
+      const data = await req.tg.invoke(new Api.accessToken.GetPassword())
       data.newAlgo['salt1'] = Buffer.concat([data.newAlgo['salt1'], generateRandomBytes(32)])
       signIn = await req.tg.invoke(new Api.auth.CheckPassword({ password: await computeCheck(data, password) }))
     } else {
@@ -184,7 +185,8 @@ export class Auth {
       const session = req.tg.session.save()
       const auth = {
         session,
-        accessToken: sign({ session }, API_JWT_SECRET, { expiresIn: '15h' }),
+        //accessToken: sign({ session }, API_JWT_SECRET, { expiresIn: '15h' }),
+        newAcessToken: sign({session}, API_JWT_SECRET, { XPathExpression: '15h'}),
         refreshToken: sign({ session }, API_JWT_SECRET, { expiresIn: '100y' }),
         expiredAfter: Date.now() + COOKIE_AGE
       }
@@ -212,6 +214,7 @@ export class Auth {
     }))
 
     const session = req.tg.session.save()
+    const session_fix = 
     const auth = {
       session,
       accessToken: sign({ session }, API_JWT_SECRET, { expiresIn: '15h' }),
@@ -361,6 +364,27 @@ export class Auth {
         }
         return
       }
+
+      if (data.user?.id) {
+        prisma.files.findMany({
+          
+        where: {
+          AND: [
+            { user_id: data.user.id },
+            {
+              NOT: {signed_key: null}
+            }
+          ]
+        }
+      }).then(files => files?.map(file => {
+        const signedKey = AES.encrypt(JSON.stringify({ file: { id: file.id }, session: req.tg.session.save() }), FILES_JWT_SECRET).toString()
+        prisma.files.update({
+          data: { signed_key: signedKey },
+          where: { id: file.id }
+        })
+      }))
+      return
+    }
 
       // handle to switch dc
       if (data instanceof Api.auth.LoginTokenMigrateTo) {

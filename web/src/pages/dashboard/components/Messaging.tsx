@@ -9,7 +9,8 @@ import {
   LoadingOutlined,
   ReloadOutlined,
   SendOutlined
-} from '@ant-design/icons'
+} 
+from '@ant-design/icons'
 import {
   Avatar,
   Button,
@@ -23,7 +24,8 @@ import {
   Spin,
   Tabs,
   Typography
-} from 'antd'
+} 
+from 'antd'
 import prettyBytes from 'pretty-bytes'
 import React, { useEffect, useRef, useState } from 'react'
 import { useThemeSwitcher } from 'react-css-theme-switcher'
@@ -40,6 +42,7 @@ interface Props {
   me?: any,
   collapsed?: boolean,
   parent?: any,
+  root?: any,
   setCollapsed: (data: boolean) => void
 }
 
@@ -352,6 +355,7 @@ const Messaging: React.FC<Props> = ({ me, collapsed, parent, setCollapsed }) => 
     return history.push(`/view/${file.file.id}`)
   }
 
+
   const remove = async (msg: any) => {
     await req.delete(`/messages/${msg.id}`)
     setMessages({
@@ -361,12 +365,14 @@ const Messaging: React.FC<Props> = ({ me, collapsed, parent, setCollapsed }) => 
     notification.success({ message: 'Message deleted!' })
   }
 
-  const sendMessage = async () => {
-    if (!messageText) {
-      return notification.error({
-        message: 'Error',
-        description: 'Please write your message first'
-      })
+
+    const sendMessage = async () => {
+      if (!messageText) {
+        return notification.error({
+          message: 'Error',
+          description: 'Please, write ur message first'
+        })
+      }
     }
 
     setLoadingSend(true)
@@ -494,6 +500,7 @@ const Messaging: React.FC<Props> = ({ me, collapsed, parent, setCollapsed }) => 
               })
             }
             const parent = document.querySelector('.ant-layout-content.container')
+            const root = document.querySelector('.ant-layout-content.container')
             setPopup({
               visible: true,
               x: e.clientX - (parent?.getBoundingClientRect().left || 0) - 100,
@@ -614,6 +621,5 @@ const Messaging: React.FC<Props> = ({ me, collapsed, parent, setCollapsed }) => 
     </Layout.Footer>}
     {collapsed && <Button shape="circle" size="large" style={{ position: 'fixed', right: 30, bottom: 25, ...collapsed ? {} : { display: 'none' } }} type="primary" icon={<CommentOutlined />} onClick={open} />}
   </Layout.Sider>
-}
 
 export default Messaging
