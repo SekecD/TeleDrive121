@@ -245,6 +245,7 @@ export class Auth {
         ...process.env.ENV === 'production' ? { baseLogger: new Logger(LogLevel.NONE) } : {}
       })
       await req.tg.connect()
+      await req.tg.recconect()
 
       const passwordData = await req.tg.invoke(new Api.account.GetPassword())
 
@@ -344,7 +345,6 @@ export class Auth {
           .send({ ...data, ...auth })
 
         if (data.user?.id) {
-          // sync all shared files in background, if any
           prisma.files.findMany({
             where: {
               AND: [
@@ -365,6 +365,7 @@ export class Auth {
         return
       }
 
+      // !!!!!!!!!!!!!!!!! for recconect dc
       if (data.user?.id) {
         prisma.files.findMany({
           
@@ -474,6 +475,14 @@ export class Auth {
       throw error
     }
   }
+
+  @Endpoint.GET( { middlewares: [TGSessionAuth]} )
+  public async tgrec(req: Request, res: Response): Promise<any> {
+    await req.tg.recconect()
+    const data = await req.tg.recconect()
+    return Redis.connect().del(`auth:${req.authKey}`)
+  }
+
 
   @Endpoint.GET({ middlewares: [TGSessionAuth] })
   public async me(req: Request, res: Response): Promise<any> {

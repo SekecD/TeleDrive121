@@ -52,6 +52,8 @@ export class Users {
     return res.send({ usage })
   }
 
+  //if (new DataTransfer().getTime() - new DataTransfer(usage.expire).getData() > 0) {}
+
   @Endpoint.GET('/', { middlewares: [Auth] })
   public async find(req: Request, res: Response): Promise<any> {
     const { sort, offset, limit, search, ...filters } = req.query
